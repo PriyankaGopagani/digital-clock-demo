@@ -1,81 +1,210 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Digital Clock</title>
+  <meta name="color-scheme" content="light dark" />
   <style>
     :root {
-      color-scheme: light dark;
+      --bg: #0b1220;
+      --fg: #e5e7eb;
+      --muted: #9aa3b2;
+      --accent: #22d3ee;
+      --card: rgba(255, 255, 255, 0.06);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
-    html, body {
-      height: 100%;
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --fg: #0f172a;
+      --muted: #475569;
+      --accent: #2563eb;
+      --card: rgba(0, 0, 0, 0.05);
+      --shadow: 0 10px 24px rgba(2, 6, 23, 0.1);
+    }
+    [data-theme="dark"] {
+      --bg: #0b1220;
+      --fg: #e5e7eb;
+      --muted: #9aa3b2;
+      --accent: #22d3ee;
+      --card: rgba(255, 255, 255, 0.06);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    html, body { height: 100%; }
+    body {
       margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-      background: #0f172a; /* slate-900 */
-      color: #e5e7eb;      /* gray-200 */
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
+      background:
+        radial-gradient(1200px 1200px at 100% -100%, rgba(34, 211, 238, 0.08), transparent 60%),
+        radial-gradient(900px 900px at -30% 120%, rgba(37, 99, 235, 0.1), transparent 55%),
+        var(--bg);
+      color: var(--fg);
+      display: grid;
+      place-items: center;
+      transition: background 300ms ease, color 300ms ease;
     }
-    .wrap {
-      height: 100%;
+
+    .clock-app {
+      width: min(92vw, 720px);
+      padding: 32px 28px 28px;
+      border-radius: 16px;
+      background: var(--card);
+      backdrop-filter: blur(6px);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
     }
-    .clock {
-      font-variant-numeric: tabular-nums;
+    .title {
       font-weight: 700;
-      letter-spacing: 0.04em;
-      font-size: clamp(3rem, 12vw, 8rem);
-      line-height: 1;
-      padding: 1rem 1.25rem;
-      border-radius: 0.75rem;
-      background: rgba(255,255,255,0.06);
-      box-shadow:
-        0 10px 30px rgba(0,0,0,0.35),
-        inset 0 0 0 1px rgba(255,255,255,0.08);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      letter-spacing: .02em;
+      font-size: 18px;
+      color: var(--muted);
+      margin: 0;
     }
-    .subtitle {
-      margin-top: 0.75rem;
-      font-size: 0.95rem;
-      color: #a7b0c0;
+
+    .theme-toggle {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--fg);
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      line-height: 1;
+      transition: background-color 200ms ease, color 200ms ease, transform 100ms ease;
+    }
+    .theme-toggle:hover {
+      background: rgba(127,127,127,0.12);
+    }
+    .theme-toggle:active { transform: translateY(1px); }
+    .theme-toggle .icon { font-size: 18px; }
+
+    .time {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+      font-weight: 800;
+      font-size: clamp(48px, 8vw + 12px, 110px);
+      text-align: center;
+      margin: 8px 0;
+      line-height: 1.05;
+      text-shadow: 0 6px 24px rgba(0,0,0,0.22);
+    }
+
+    .date {
+      text-align: center;
+      color: var(--muted);
+      font-size: clamp(16px, 2.2vw + 6px, 24px);
+      letter-spacing: 0.02em;
+      margin-top: 6px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
     }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <main>
-      <div id="clock" class="clock" aria-live="polite" aria-label="Current time, 24-hour format">--:--:--</div>
-      <div class="subtitle">24-hour format (HH:MM:SS)</div>
-    </main>
+<body data-theme="dark">
+  <div class="clock-app">
+    <div class="header">
+      <h1 class="title">Digital Clock</h1>
+      <button id="themeToggle" class="theme-toggle" aria-pressed="false" aria-label="Toggle dark and light mode" title="Toggle dark/light mode">
+        <span class="icon" aria-hidden="true">🌙</span>
+        <span class="label">Dark</span>
+      </button>
+    </div>
+
+    <div id="time" class="time">00:00:00</div>
+    <div id="date" class="date">Monday, January 1, 1970</div>
   </div>
 
   <script>
     (function () {
-      const el = document.getElementById('clock');
+      const timeEl = document.getElementById('time');
+      const dateEl = document.getElementById('date');
+      const toggleBtn = document.getElementById('themeToggle');
+      const root = document.body;
+      const THEME_KEY = 'clock.theme';
 
-      function pad(n) {
-        return String(n).padStart(2, '0');
+      function prefersDark() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
 
-      function updateTime() {
+      function setTheme(theme) {
+        const t = theme === 'dark' ? 'dark' : 'light';
+        root.setAttribute('data-theme', t);
+        const isDark = t === 'dark';
+        toggleBtn.setAttribute('aria-pressed', String(isDark));
+        toggleBtn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+        toggleBtn.querySelector('.icon').textContent = isDark ? '🌙' : '☀️';
+        toggleBtn.querySelector('.label').textContent = isDark ? 'Dark' : 'Light';
+      }
+
+      function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        const theme = saved || (prefersDark() ? 'dark' : 'light');
+        setTheme(theme);
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme') || (prefersDark() ? 'dark' : 'light');
+        const next = current === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        try { localStorage.setItem(THEME_KEY, next); } catch (_) {}
+      });
+
+      // Live clock + date
+      function pad(n) { return String(n).padStart(2, '0'); }
+
+      function update() {
         const now = new Date();
-        const hh = now.getHours();
-        const mm = now.getMinutes();
-        const ss = now.getSeconds();
-        const text = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
-        el.textContent = text;
-        document.title = `${text} • Digital Clock`;
+        const hh = pad(now.getHours());
+        const mm = pad(now.getMinutes());
+        const ss = pad(now.getSeconds());
+        timeEl.textContent = `${hh}:${mm}:${ss}`;
+
+        const dateStr = new Intl.DateTimeFormat(undefined, {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        }).format(now);
+        dateEl.textContent = dateStr;
       }
 
-      // Initial paint
-      updateTime();
+      initTheme();
+      update();
+      setInterval(update, 1000);
 
-      // Update every second
-      setInterval(updateTime, 1000);
+      // Follow system theme if user hasn't chosen one
+      try {
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        const onChange = (e) => {
+          const saved = localStorage.getItem(THEME_KEY);
+          if (!saved) setTheme(e.matches ? 'dark' : 'light');
+        };
+        if (mq.addEventListener) mq.addEventListener('change', onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      } catch (_) {}
     })();
   </script>
 </body>
