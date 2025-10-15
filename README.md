@@ -1,22 +1,29 @@
-# Digital Clock (24-hour)
+# Digital Clock (with Dark/Light Mode and Date)
 
 ## Overview
-A minimal, dependency-free digital clock web app that displays the current time in 24-hour HH:MM:SS format and updates every second.
+A simple, responsive digital clock web app that displays the current time and the full date. It includes a dark/light mode toggle with smooth transitions and remembers your preference across visits. No external dependencies.
 
 ## Setup
-- No build steps or dependencies required.
-- Simply open index.html in any modern web browser.
+- Download the repository or this single file.
+- Open index.html in any modern web browser.
+
+That's it—no build steps required.
 
 ## Usage
-- Open index.html.
-- The clock shows the current time in 24-hour format and updates automatically every second.
-- Keep the tab open to continue seeing live time; the page title also reflects the current time.
+- Time updates every second automatically.
+- The current date is shown beneath the time in your locale format (e.g., Wednesday, October 15, 2025).
+- Click the Dark/Light toggle in the top-right to switch themes.
+  - The app will remember your choice (stored in localStorage).
+  - If you haven’t chosen a theme yet, it follows your system’s preferred color scheme.
 
-## License (MIT)
-Copyright (c) 2025
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+## Improvements in Round 2
+This version enhances the previous digital clock by:
+- Adding a dark/light mode toggle with:
+  - Smooth theme transitions
+  - Preference persistence via localStorage
+  - Automatic system theme detection and live updates when your OS theme changes (unless overridden)
+- Displaying the current date below the time using your locale for formatting
+- UI polish and accessibility:
+  - Clear, high-contrast styles for both themes
+  - Accessible toggle with ARIA attributes
+  - Responsive typography with tabular numerals for stable time layout
